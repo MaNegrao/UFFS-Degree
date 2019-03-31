@@ -1,6 +1,5 @@
 from __future__ import division  
  
- eddedee
 def bissecao(f, a, b, TOL, N):  
     i = 1  
     fa = f(a)  
