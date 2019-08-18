@@ -252,55 +252,6 @@ def eliProdMortos(estado, qtd):
 					if autDet[autDet[estado][1][terminal]][0] == 0: # nao eh final
 						listMortos.add(autDet[estado][1][terminal]) # segundo estado do loop
 
-def eliInalc(estado):                                              
-	global listAlcancaveis
-	global listTerm
-	global aut
-	global listVisitInalc
-	
-	listVisitInalc.add(estado)
-
-	listAlcancaveis.add(estado) # insere o primeiro estado
-
-	for terminal in listTerm:
-		if str(aut[estado][1]).find(terminal) != -1: # existe esse terminal em S
-			aux = ''
-			
-			for producoes in aut[estado][1][terminal]: 
-				aux = str(aux)+str(producoes)
-			producao = aux
-			# estado ainda nao criado, anal. separadamente
-			if len(producao) > 1: 
-				for cadaCaractEst in producao:
-					# funcao que busca ebsolon somente nas producoes deste estado
-					eliProdInal(cadaCaractEst, 0)
-					listAlcancaveis.add(cadaCaractEst) 
-			else:
-				eliProdInal(producao, 0)
-				listAlcancaveis.add(producao)			
-
-def eliProdInal(estado, qtd):
-	global listTerm
-	global listAlcancaveis
-	global autDet
-	global listVisitInalc
-	qtd += 1
-	for terminal in listTerm:
-		if estado != '' and str(autDet[estado][1]).find(terminal) != -1:
-			
-			listVisitInalc.add(autDet[estado][1][terminal])
-			
-			if proximoEstado in listVisitInalc and qtd < 20: # Ok
-				print('estado')
-				print(estado)
-				proximoEstado = autDet[estado][1][terminal]
-				# Encontrou um alcançado
-				listAlcancaveis.add(proximoEstado)
-				#				
-				eliProdInal(proximoEstado, qtd)
-			else: # deu loop
-				return 
-
 def printAFD(tipo, eMorto, aut, listNTerm, mensagem):
 	global listTerm
 	global conteudoArquivo
