@@ -257,25 +257,23 @@ def printAFD(tipo, eMorto, aut, listNTerm, mensagem):
 	global conteudoArquivo
 
 	autPrint = aut
-	# Limpar 
 	for i in listNTerm:
 		for j in listTerm:
-			if str(autPrint[i][1]).find(j) == -1 or autPrint[i][1][j] == '': # Não encontrou
+			if str(autPrint[i][1]).find(j) == -1 or autPrint[i][1][j] == '':
 				autPrint[i][1][j] = '  X'
 
 	matriz = str(mensagem)+'\n\n'
 	matriz = str(matriz)+' |  δ\t'
-	for i in listTerm: # exibe todas as letrinhas
+	for i in listTerm:
 		matriz = str(matriz)+' | '+i+'\t'
 	matriz = str(matriz)+' |\n'
 	matriz = str(matriz)+' ---------'
-	for i in listTerm: # exibe todas as letrinhas
+	for i in listTerm: 
 		matriz = str(matriz)+'--------'
 	matriz = str(matriz)+'\n'
 		
 	for i in listNTerm:
 		if eMorto == 1 or (eMorto == 0 and i not in listMortos and tipo == 1):
-			#
 			if autPrint[i][0] == 1:
 				final = '*'
 			else:
@@ -284,10 +282,9 @@ def printAFD(tipo, eMorto, aut, listNTerm, mensagem):
 
 			for j in listTerm:
 				matriz = str(matriz)+' | '+autPrint[i][1][j]+"\t"
-			
-			# Verifica se é morto
+
 			morto = ' | '
-			if i in listMortos and tipo == 1: # é morto
+			if i in listMortos and tipo == 1: 
 				morto = ' | Morto'
 
 			matriz = str(matriz)+morto+'\n'
