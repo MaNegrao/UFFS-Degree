@@ -1,9 +1,9 @@
 #Variaveis Globais
 
-#autnarios
-aut    = {} #  
-autDet = {} # deterministico
-autAux = {} #
+#automatonarios
+automato    = {} #  
+automatoDet = {} # deterministico
+automatoAux = {} #
 #entrada
 entrada = ''
 listNTerm = []  # nao terminais
@@ -21,7 +21,7 @@ listVisitInalc = set()
 conteudoArquivo = '' # conteudo que enviara para o arquivo
 
 def insList(lista, vlr):                                             #insere na lista sem repetir os elementos
-	if str(lista).find(vlr) == -1: # ainda nao existe na lista, pode aautnar
+	if str(lista).find(vlr) == -1: # ainda nao existe na lista, pode aautomatonar
 		lista.append(vlr)
 
 def decodificaEntrada():
@@ -41,8 +41,8 @@ def decodificaEntrada():
 		else:					  # Tokens
 			tokens = str(tokens)+str(linha)+'\n'
 
-def criaAutomatoGramatica():                                        #trata gramatica para ser uma só antes de fazer as produções
-	global aut
+def criaautomatoGramatica():
+	global automato
 	global gramaticas
 	estTemp = []
 
@@ -63,10 +63,10 @@ def criaAutomatoGramatica():                                        #trata grama
 		if linha != '': 
 			partes = linha.split('::=') #faz a separação em partes
 			estado = partes[0][1:len(partes[0])-1] #pega somente o estado da gramatica
-			aut[estado] = criaProducoesGramatica(partes[1]) #chama a função de criar as produções para aquele estado
+			automato[estado] = criaProducoesGramatica(partes[1]) #chama a função de criar as produções para aquele estado
 			
 	print("Gramatica")
-	print(aut, '\n')
+	print(automato, '\n')
 
 def criaProducoesGramatica(producoes):
 	regra = {}
@@ -82,7 +82,7 @@ def criaProducoesGramatica(producoes):
 				else:
 					regra[producao] = str(str(regra[producao])+'X') # estado de erro
 				listTermTmp.add(producao)
-				aut['X'] = [1, {'':''}]
+				automato['X'] = [1, {'':''}]
 				insList(listNTerm, 'X') #insere estado de erro
 			else: #epsilon
 				final = 1 # estado sera final
@@ -102,7 +102,7 @@ def criaProducoesGramatica(producoes):
 def criaProducoesToken():
 	global listNTerm
 	global tokens
-	global aut
+	global automato
 	
 	linha = tokens.split("\n")	
 	for i in linha:
@@ -110,24 +110,24 @@ def criaProducoesToken():
 			cont = 0
 			for j in i: # cada caractere do token
 				if cont == 0: # primeiro caracterer do token
-					if aut == {}: # caso o automato esteja vazio
-						aut['S'] = [0, {j:''}]
+					if automato == {}: # caso o automato esteja vazio
+						automato['S'] = [0, {j:''}]
 						listNTerm.append('S')
-					if j in aut['S'][1]: # se já tiver aquele token no automato 
+					if j in automato['S'][1]: # se já tiver aquele token no automato 
 						estadoFinal = ultimoEstado(j)
-						aut['S'][1][j] = str(aut['S'][1][j])+str(estadoFinal)
+						automato['S'][1][j] = str(automato['S'][1][j])+str(estadoFinal)
 					else: # caso padrão, o automato não está vazio e não tem nenhuma regra para aquele token
 						estadoFinal = ultimoEstado(j)
-						aut['S'][1][j] = estadoFinal
+						automato['S'][1][j] = estadoFinal
 				else: # caso não seja o primeiro caractere, cria uma regra pra ele
 					proximoEstado = listNTerm[len(listNTerm)-1]
 					estadoFinal = ultimoEstado(j)
-					aut[proximoEstado] = [0, {j:estadoFinal}]
-					aut[proximoEstado][1][j] = listNTerm[len(listNTerm)-1]
+					automato[proximoEstado] = [0, {j:estadoFinal}]
+					automato[proximoEstado][1][j] = listNTerm[len(listNTerm)-1]
 				
 				# valia de se o estado é final ou não, se for 
 				if cont == len(i)-1: # ultima letra do token... gera um estado final
-					aut[estadoFinal] = [1, {'':''}]
+					automato[estadoFinal] = [1, {'':''}]
 
 				cont += 1
 
@@ -143,27 +143,26 @@ def ultimoEstado(terminal):                                         #busca o ult
 	if len(listNTerm) == 1: # para criar A
 		codLetra = 64
 	novaLetra = chr(codLetra+1)	
-	# atualiza vetor de est
 	listNTerm.append(novaLetra)
 	insList(listTerm, terminal)
 	return novaLetra
 
 def determiniza():
-	global aut
-	global autDet
+	global automato
+	global automatoDet
 	global listNTerm
 	global listTerm
-	global autAux
+	global automatoAux
 	global estVisit
 	global estVisitOrd
 	
-	autAux = aut
+	automatoAux = automato
 
 	ordemDeterm = []
 	ordemDetermX = set()
 	insList(ordemDeterm, listNTerm[0])
 
-	autDet[listNTerm[0]] = aut[listNTerm[0]] # aut de S
+	automatoDet[listNTerm[0]] = automato[listNTerm[0]] # automato de S
 
 	while 1:
 		if ordemDeterm == '' or ordemDeterm == []:
@@ -178,12 +177,12 @@ def determiniza():
 		print(estVisitOrd , '\n')
 
 		for terminal in listTerm:			
-			if str(autAux[ordemDeterm[0]][1]).find(terminal) != -1: # este terminal existe neste estado
-				if autAux[ordemDeterm[0]][1][terminal] not in ordemDetermX and autAux[ordemDeterm[0]][1][terminal] != '':
-					ordemDeterm.append(autAux[ordemDeterm[0]][1][terminal])
-				ordemDetermX.add(autAux[ordemDeterm[0]][1][terminal])	
+			if str(automatoAux[ordemDeterm[0]][1]).find(terminal) != -1: # este terminal existe neste estado
+				if automatoAux[ordemDeterm[0]][1][terminal] not in ordemDetermX and automatoAux[ordemDeterm[0]][1][terminal] != '':
+					ordemDeterm.append(automatoAux[ordemDeterm[0]][1][terminal])
+				ordemDetermX.add(automatoAux[ordemDeterm[0]][1][terminal])	
 	
-		# passa o primeiro valor da lista de ordem (S) para determinizar a linha no autDet
+		# passa o primeiro valor da lista de ordem (S) para determinizar a linha no automatoDet
 		ordemDeterm.pop(0)
 
 		if len(ordemDeterm) > 0 and ordemDeterm[0] not in estVisit:
@@ -191,11 +190,11 @@ def determiniza():
 			if len(ordemDeterm) > 0 and len(ordemDeterm[0]) > 1: #lista não esta vazia e há indeterminismo
 				determinizaLinha(ordemDeterm[0])
 			if ordemDeterm[0] != '':
-				autDet[ordemDeterm[0]] = autAux[ordemDeterm[0]]
+				automatoDet[ordemDeterm[0]] = automatoAux[ordemDeterm[0]]
 
 def determinizaLinha(estado):
 	global listTerm
-	global autAux
+	global automatoAux
 	flagFinal = 0
 	regra = {}
 	# concatena
@@ -205,16 +204,16 @@ def determinizaLinha(estado):
 	for letra in estado:
 		for terminal in listTerm: 
 			# Verifica se concatenacao nao repete nenhuma letra
-			if str(autAux[letra][1]).find(terminal) != -1:
+			if str(automatoAux[letra][1]).find(terminal) != -1:
 				#  valida para não concatenar as mesmas letras
-				if str(regra[terminal]).find(autAux[letra][1][terminal]) == -1: # não encontrou 
-					regra[terminal] = str(regra[terminal])+str(autAux[letra][1][terminal])
+				if str(regra[terminal]).find(automatoAux[letra][1][terminal]) == -1: # não encontrou 
+					regra[terminal] = str(regra[terminal])+str(automatoAux[letra][1][terminal])
 
 		# Verifica se este estado eh final
-		if autAux[letra][0] == 1:
+		if automatoAux[letra][0] == 1:
 			flagFinal = 1
 
-	autAux[estado] = [flagFinal, regra]
+	automatoAux[estado] = [flagFinal, regra]
 
 def minimiza(): 
 	global estVisitOrd
@@ -224,12 +223,12 @@ def minimiza():
 
 def eliMortos(estado):
 	global listTerm
-	global autDet
+	global automatoDet
 
 	for terminal in listTerm:
-		if str(autDet[estado][1]).find(terminal) != -1: # existe esse terminal em S
+		if str(automatoDet[estado][1]).find(terminal) != -1: # existe esse terminal em S
 			aux = ''
-			for producoes in autDet[estado][1][terminal]: # varre todas as producoes do estado S
+			for producoes in automatoDet[estado][1][terminal]: # varre todas as producoes do estado S
 				aux = str(aux)+str(producoes)
 			producao = aux
 			
@@ -238,29 +237,29 @@ def eliMortos(estado):
 def eliProdMortos(estado, qtd):
 	global listTerm
 	global listMortos
-	global autDet
+	global automatoDet
 	qtd += 1
 	for terminal in listTerm:
-		if estado != '' and autDet[estado][0] == 0: # nao eh final			
-			if str(autDet[estado][1]).find(terminal) != -1:
+		if estado != '' and automatoDet[estado][0] == 0: # nao eh final			
+			if str(automatoDet[estado][1]).find(terminal) != -1:
 				if qtd < 20:
-					eliProdMortos(autDet[estado][1][terminal], qtd)
+					eliProdMortos(automatoDet[estado][1][terminal], qtd)
 				else: 
 					# MORTO
-					if autDet[estado][0] == 0: # nao eh final
+					if automatoDet[estado][0] == 0: # nao eh final
 						listMortos.add(estado) # primeiro estado do loop
-					if autDet[autDet[estado][1][terminal]][0] == 0: # nao eh final
-						listMortos.add(autDet[estado][1][terminal]) # segundo estado do loop
+					if automatoDet[automatoDet[estado][1][terminal]][0] == 0: # nao eh final
+						listMortos.add(automatoDet[estado][1][terminal]) # segundo estado do loop
 
-def printAFD(tipo, eMorto, aut, listNTerm, mensagem):
+def printAFD(tipo, eMorto, automato, listNTerm, mensagem):
 	global listTerm
 	global conteudoArquivo
 
-	autPrint = aut
+	automatoPrint = automato
 	for i in listNTerm:
 		for j in listTerm:
-			if str(autPrint[i][1]).find(j) == -1 or autPrint[i][1][j] == '':
-				autPrint[i][1][j] = '  X'
+			if str(automatoPrint[i][1]).find(j) == -1 or automatoPrint[i][1][j] == '':
+				automatoPrint[i][1][j] = '  X'
 
 	matriz = str(mensagem)+'\n\n'
 	matriz = str(matriz)+' |  δ\t'
@@ -274,14 +273,14 @@ def printAFD(tipo, eMorto, aut, listNTerm, mensagem):
 		
 	for i in listNTerm:
 		if eMorto == 1 or (eMorto == 0 and i not in listMortos and tipo == 1):
-			if autPrint[i][0] == 1:
+			if automatoPrint[i][0] == 1:
 				final = '*'
 			else:
 				final = ' '
 			matriz = str(matriz)+' | '+final+i+'\t'
 
 			for j in listTerm:
-				matriz = str(matriz)+' | '+autPrint[i][1][j]+"\t"
+				matriz = str(matriz)+' | '+automatoPrint[i][1][j]+"\t"
 
 			morto = ' | '
 			if i in listMortos and tipo == 1: 
@@ -296,9 +295,9 @@ f.seek(0)
 entrada = f.read().decode().replace(' ', '')
 
 decodificaEntrada()
-criaAutomatoGramatica()
+criaautomatoGramatica()
 criaProducoesToken()
 determiniza()
 minimiza() 
-printAFD(0, 1, aut, listNTerm, "\n\nAutômato Finito Não Determinístico")
-printAFD(1, 0, autDet, estVisitOrd, "\n\nAutômato Finito Minimo Determinístico")
+printAFD(0, 1, automato, listNTerm, "\n\nautomatoômato Finito Não Determinístico")
+printAFD(1, 0, automatoDet, estVisitOrd, "\n\nautomatoômato Finito Minimo Determinístico")
