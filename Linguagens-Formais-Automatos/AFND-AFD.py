@@ -1,11 +1,10 @@
 #Variaveis Globais
 
+entrada = ''
 #automatonarios
 automato    = {} #  
 automatoDet = {} # deterministico
 automatoAux = {} #
-#entrada
-entrada = ''
 listNTerm = []  # nao terminais
 listTerm = [] # terminais
 gramaticas = ''
@@ -20,8 +19,8 @@ listAlcancaveis = set()
 listVisitInalc = set()
 conteudoArquivo = '' # conteudo que enviara para o arquivo
 
-def insList(lista, vlr):                                             #insere na lista sem repetir os elementos
-	if str(lista).find(vlr) == -1: # ainda nao existe na lista, pode aautomatonar
+def insList(lista, vlr):                                             
+	if str(lista).find(vlr) == -1:
 		lista.append(vlr)
 
 def decodificaEntrada():
