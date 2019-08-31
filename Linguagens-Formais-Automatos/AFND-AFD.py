@@ -110,14 +110,14 @@ def criaProducoesToken():
 			for j in i: # cada caractere do token
 				if cont == 0: # primeiro caracterer do token
 					if automato == {}: # caso o automato esteja vazio
-						automato['S'] = [0, {j:''}]
-						listNTerm.append('S')
-					if j in automato['S'][1]: # se já tiver aquele token no automato 
+						automato[0] = [0, {j:''}]
+						listNTerm.append(0)
+					if j in automato[0][1]: # se já tiver aquele token no automato 
 						estadoFinal = ultimoEstado(j)
-						automato['S'][1][j] = str(automato['S'][1][j])+str(estadoFinal)
+						automato[0][1][j] = str(automato[0][1][j])+str(estadoFinal)
 					else: # caso padrão, o automato não está vazio e não tem nenhuma regra para aquele token
 						estadoFinal = ultimoEstado(j)
-						automato['S'][1][j] = estadoFinal
+						automato[0][1][j] = estadoFinal
 				else: # caso não seja o primeiro caractere, cria uma regra pra ele
 					proximoEstado = listNTerm[len(listNTerm)-1]
 					estadoFinal = ultimoEstado(j)
